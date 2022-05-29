@@ -38,9 +38,9 @@ public class PostService {
     public PostDto createNewPost(PostDto postDto) {
         this.loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         Post post = mapper.toEntity(postDto);
-        List<BlogUser> users = userRepo.findByEmail(loggedInUser.getName());
-        if(users.size() > 0){
-            BlogUser user = users.get(0);
+        Optional<BlogUser> optionalBlogUser = userRepo.findByEmail(loggedInUser.getName());
+        if(optionalBlogUser.isPresent()){
+            BlogUser user = optionalBlogUser.get();
             user.getPosts().add(post);
             post.setUser(user);
             userRepo.save(user);
@@ -51,9 +51,9 @@ public class PostService {
 
     public List<PostDto> getUserPosts() {
         this.loggedInUser = SecurityContextHolder.getContext().getAuthentication();
-        List<BlogUser> user = userRepo.findByEmail(loggedInUser.getName());
-        if(user.size()>0)
-            return user.get(0).getPosts()
+        Optional<BlogUser> optionalBlogUser = userRepo.findByEmail(loggedInUser.getName());
+        if(optionalBlogUser.isPresent())
+            return optionalBlogUser.get().getPosts()
                     .stream().map(mapper::toDto)
                     .collect(Collectors.toList());
         throw new UsernameNotFoundException("user not found: "+loggedInUser.getName());

@@ -5,6 +5,7 @@ import com.mentor.blogStie.dtos.PostDto;
 import com.mentor.blogStie.services.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,12 +22,12 @@ public class PostController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PostDto createNewPost(@RequestBody @Valid PostDto postDto){
+    public PostDto createNewPost(@RequestBody @Validated PostDto postDto){
         return service.createNewPost(postDto);
     }
 
     @PutMapping("/{id}")
-    public PostDto updatePost(@PathVariable Long id,@RequestBody @Valid PostDto postDto){
+    public PostDto updatePost(@PathVariable Long id,@RequestBody @Validated PostDto postDto){
         return service.updatePost(id,postDto);
     }
 

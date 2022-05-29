@@ -15,13 +15,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
+
 @Service
 public class BlogUserDetailsService implements UserDetailsService {
     private final BlogUserRepo repo;
     private final PasswordEncoder passwordEncoder;
     private final BlogUserMapper mapper;
-    private Authentication auth;
     public BlogUserDetailsService(BlogUserRepo repo, PasswordEncoder passwordEncoder) {
         this.repo = repo;
         this.passwordEncoder = passwordEncoder;
@@ -30,26 +30,39 @@ public class BlogUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        List<BlogUser> users = repo.findByEmail(username);
-        if(users.size() == 0 ){
-            throw new UsernameNotFoundException(username);
-        }
-        return new SecurityUser(users.get(0));
+        Optional<BlogUser> user = repo.findByEmail(username);
+
+        if(user.isPresent())
+            return new SecurityUser(user.get());
+
+        throw new UsernameNotFoundException(username);
     }
 
     public BlogUserDto register(BlogUserDto blogUserDto) {
-        List<BlogUser> users = repo.findByEmail(blogUserDto.getEmail());
-        if(users.size() >  0)
-            throw new UserExists(blogUserDto.getEmail());
+        Optional<BlogUser> optionalBlogUser = repo.findByEmail(blogUserDto.getEmail());
+
+        if (optionalBlogUser.isPresent()) throw new UserExists(blogUserDto.getEmail());
+
         BlogUser user = mapper.toEntity(blogUserDto);
         user.setPassword(passwordEncoder.encode(blogUserDto.getPassword()));
+
         return mapper.toDto(repo.save(user));
+
     }
 
 
-    /*public BlogUserDto updateUser(BlogUserDto blogUserDto) {
-        this.auth = SecurityContextHolder.getContext().getAuthentication();
+    public BlogUserDto updateUser(BlogUserDto blogUserDto) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+        Optional<BlogUser> optionalBlogUser = repo.findByEmail(blogUserDto.getEmail());
+        Optional<BlogUser> actualUser = repo.findByEmail(auth.getName());
 
-    }*/
+        if(optionalBlogUser.isPresent()) throw new UserExists(blogUserDto.getEmail());
+
+        BlogUser user = actualUser.get();
+        user.setPassword(passwordEncoder.encode(blogUserDto.getPassword()));
+        user.setRole(blogUserDto.getRole());
+
+        return mapper.toDto(repo.save(user));
+    }
 }

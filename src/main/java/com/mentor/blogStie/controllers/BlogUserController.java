@@ -3,6 +3,7 @@ package com.mentor.blogStie.controllers;
 import com.mentor.blogStie.dtos.BlogUserDto;
 import com.mentor.blogStie.services.BlogUserDetailsService;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -20,7 +21,7 @@ public class BlogUserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public BlogUserDto hello(@RequestBody @Valid BlogUserDto blogUserDto){
+    public BlogUserDto hello(@Validated @RequestBody  BlogUserDto blogUserDto){
         return service.register(blogUserDto);
     }
 
@@ -30,8 +31,8 @@ public class BlogUserController {
         return new RedirectView("/login");
     }
 
-  /*  @PutMapping("/user/update")
-    public BlogUserDto updateUser(@RequestBody @Valid BlogUserDto blogUserDto){
+    @PutMapping("/user/update")
+    public BlogUserDto updateUser(@Validated @RequestBody  BlogUserDto blogUserDto){
         return service.updateUser(blogUserDto);
-    }*/
+    }
 }

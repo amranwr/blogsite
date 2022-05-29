@@ -1,8 +1,6 @@
 package com.mentor.blogStie.models;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -10,14 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "blogUser")
+@Table(name = "blog_user")
 @Getter
 @Setter
 public class BlogUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id ;
-
+    @Column(unique = true)
     private String email;
     private String password;
     private String role;
