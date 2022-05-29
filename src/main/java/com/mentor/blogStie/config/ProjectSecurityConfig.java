@@ -17,9 +17,14 @@ public class ProjectSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeRequests()
-                .antMatchers("/blog/v1").authenticated()
-                .antMatchers("/blog/v2").permitAll()
+        httpSecurity.csrf().disable().authorizeRequests()
+                .antMatchers("/post/**").authenticated()
+                .antMatchers("/").authenticated()
+                .antMatchers("/blog/register").permitAll()
+                .and().logout()
+                .logoutUrl("/blog/logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
                 .and()
                 .formLogin().and().httpBasic();
     }

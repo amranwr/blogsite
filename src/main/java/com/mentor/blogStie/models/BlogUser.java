@@ -6,19 +6,25 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "blogUser")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class BlogUser {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id ;
 
     private String email;
     private String password;
     private String role;
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
+    private List<Post> posts ;
+
+    public BlogUser() {
+        this.posts = new ArrayList<>();
+    }
 }
